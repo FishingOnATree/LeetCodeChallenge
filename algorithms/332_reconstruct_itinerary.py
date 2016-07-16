@@ -4,54 +4,39 @@
 # If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string. For example, the itinerary ["JFK", "LGA"] has a smaller lexical order than ["JFK", "LGB"].
 # All airports are represented by three capital letters (IATA code).
 # You may assume all tickets form at least one valid itinerary.
-import copy
+import collections
 
 
 class Solution(object):
-
     def findItinerary(self, tickets):
-        direction_dict = {}
-        itinerary = []
+        self.direction_dict = {}
+        tickets.sort()
         for from_, to_ in tickets:
-            direction_dict.setdefault(from_.upper(), []).append(to_.upper())
-        curr = "JFK"
-        found, path = self.travel(direction_dict, curr)
-        path.sort()
-        itinerary.append(curr)
-        itinerary.extend(path[0])
-        return itinerary
+            dest_dict = self.direction_dict.setdefault(from_.upper(), collections.OrderedDict())
+            dest_dict.setdefault(to_, 0)
+            dest_dict[to_] += 1
+        self.num_stops = len(tickets) + 1
+        self.itinerary = ["JFK"]
+        self.travel()
+        return self.itinerary
 
-    def travel(self, direction_dict, departure):
-        if not direction_dict:
-            return True, None
-        elif departure not in direction_dict:
-            return False, None
+    def travel(self):
+        if self.num_stops == len(self.itinerary):
+            return True
+        elif self.itinerary[-1] not in self.direction_dict:
+            return False
         else:
-            return_list = None
-            has_finished = False
-            for index, destination in enumerate(direction_dict[departure]):
-                new_direction_dict = copy.deepcopy(direction_dict)
-                new_direction_dict[departure].pop(index)
-                if not new_direction_dict[departure]:
-                    del new_direction_dict[departure]
-                finished, path = self.travel(new_direction_dict, destination)
-                if finished:
-                    has_finished = True
-                    return_list = [] if return_list is None else return_list
-                    if path is not None:
-                        for p in path:
-                            this_path = list()
-                            this_path.append(destination)
-                            this_path.extend(p)
-                            return_list.append(this_path)
-                    else:
-                        this_path = list()
-                        this_path.append(destination)
-                        return_list.append(this_path)
-            if has_finished:
-                return True, return_list
-            else:
-                return False, None
+            depart = self.itinerary[-1]
+            for dest, tickets_left in self.direction_dict[depart].items():
+                if tickets_left:
+                    self.itinerary.append(dest)
+                    self.direction_dict[depart][dest] -= 1
+                    if self.travel():
+                        return True
+                    self.itinerary = self.itinerary[:-1]
+                    self.direction_dict[depart][dest] += 1
+            return False
+        pass
 
 
 a = Solution()
