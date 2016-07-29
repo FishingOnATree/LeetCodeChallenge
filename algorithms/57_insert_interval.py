@@ -2,8 +2,6 @@
 # Definition for an interval.
 import random
 
-import bisect
-
 class Interval(object):
     def __init__(self, s=0, e=0):
         self.start = s
@@ -19,28 +17,49 @@ class Interval(object):
 class Solution(object):
     def insert(self, intervals, newInterval):
         n = len(intervals)
-        start_list = [0] * n
-        end_list = [0] * n
-        for index, interval in enumerate(intervals):
-            start_list[index] = interval.start
-            end_list[index] = interval.end
 
-        left = bisect.bisect_left(start_list, newInterval.start)
+        left = bisect_left(intervals, newInterval.start)
         if left > 0 and newInterval.start <= intervals[left-1].end:
             new_interval_start = intervals[left-1].start
         else:
             new_interval_start = newInterval.start
 
-        right = bisect.bisect_right(end_list, newInterval.end)
+        right = bisect_right(intervals, newInterval.end)
         if right < n and newInterval.end >= intervals[right].start:
             new_interval_end = intervals[right].end
         else:
             new_interval_end = newInterval.end
 
         updated_new_interval = Interval(s=new_interval_start, e=new_interval_end)
-        left = bisect.bisect_left(start_list, updated_new_interval.start)
-        right = bisect.bisect_right(end_list, updated_new_interval.end)
+        left = bisect_left(intervals, updated_new_interval.start)
+        right = bisect_right(intervals, updated_new_interval.end)
         return intervals[0:left] + [updated_new_interval] + intervals[right:]
+
+
+def bisect_left(a, x, lo=0, hi=None):
+    if lo < 0:
+        raise ValueError('lo must be non-negative')
+    if hi is None:
+        hi = len(a)
+    while lo < hi:
+        mid = (lo+hi)//2
+        if a[mid].start < x: lo = mid+1
+        else: hi = mid
+    return lo
+
+
+def bisect_right(a, x, lo=0, hi=None):
+    if lo < 0:
+        raise ValueError('lo must be non-negative')
+    if hi is None:
+        hi = len(a)
+    while lo < hi:
+        mid = (lo+hi)//2
+        if x < a[mid].end: hi = mid
+        else: lo = mid+1
+    return lo
+
+
 
 
 def generate_test(n, interval):
@@ -110,7 +129,7 @@ a_list = convert_interval([[1, 3], [5, 6], [9, 12]])
 # verify_ans(a_list, x, a.insert(a_list, x))
 # x = Interval(s=3, e=9)
 # verify_ans(a_list, x, a.insert(a_list, x))
-for _ in range(30):
+for _ in range(50):
     test_list, test_interval = generate_test(20, 10)
     print(test_list)
     print(test_interval)
