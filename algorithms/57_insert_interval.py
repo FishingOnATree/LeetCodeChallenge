@@ -21,18 +21,20 @@ class Solution(object):
         left = bisect_left(intervals, newInterval.start)
         if left > 0 and newInterval.start <= intervals[left-1].end:
             new_interval_start = intervals[left-1].start
+            left -= 1
         else:
             new_interval_start = newInterval.start
 
         right = bisect_right(intervals, newInterval.end)
         if right < n and newInterval.end >= intervals[right].start:
             new_interval_end = intervals[right].end
+            right += 1
         else:
             new_interval_end = newInterval.end
 
         updated_new_interval = Interval(s=new_interval_start, e=new_interval_end)
-        left = bisect_left(intervals, updated_new_interval.start)
-        right = bisect_right(intervals, updated_new_interval.end)
+        # left = bisect_left(intervals, updated_new_interval.start)
+        # right = bisect_right(intervals, updated_new_interval.end)
         return intervals[0:left] + [updated_new_interval] + intervals[right:]
 
 
@@ -116,7 +118,7 @@ def convert_interval(value_list):
 
 
 a = Solution()
-a_list = convert_interval([[1, 3], [5, 6], [9, 12]])
+# a_list = convert_interval([[1, 3], [5, 6], [9, 12]])
 # x = Interval(s=-1, e=0)
 # verify_ans(a_list, x, a.insert(a_list, x))
 # x = Interval(s=-1, e=1)
