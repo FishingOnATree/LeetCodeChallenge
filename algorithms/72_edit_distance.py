@@ -23,10 +23,14 @@ class Solution(object):
         if self.distance_matrix[j][i] >= 0:
             return self.distance_matrix[j][i]
         else:
-            min_dist_del = (self.find_min_distance(w1, i-1, w2, j, max_dist) if i > 0 else max_dist) + 1
-            min_dist_ins = (self.find_min_distance(w1, i, w2, j-1, max_dist) if j > 0 else max_dist) + 1
-            min_dis_rep = (0 if w1[i-1] == w2[j-1] else 1) + (self.find_min_distance(w1, i-1, w2, j-1, max_dist) if i > 0 and j > 0 else max_dist)
-            min_value = min(min_dist_del, min_dist_ins, min_dis_rep)
+            if w1[i-1] == w2[j-1]:
+                # replace same cost as ins/del, it guarantees minimal edit distance
+                min_value = self.find_min_distance(w1, i-1, w2, j-1, max_dist) if i > 0 and j > 0 else max_dist
+            else:
+                min_dist_del = (self.find_min_distance(w1, i-1, w2, j, max_dist) if i > 0 else max_dist) + 1
+                min_dist_ins = (self.find_min_distance(w1, i, w2, j-1, max_dist) if j > 0 else max_dist) + 1
+                min_dis_rep = 1 + (self.find_min_distance(w1, i-1, w2, j-1, max_dist) if i > 0 and j > 0 else max_dist)
+                min_value = min(min_dist_del, min_dist_ins, min_dis_rep)
             self.distance_matrix[j][i] = min_value
             return min_value
 
