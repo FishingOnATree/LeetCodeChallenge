@@ -1,13 +1,10 @@
 # 167: https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
 
-import random
-
-
 import bisect
+
 
 class Solution(object):
     def twoSum(self, numbers, target):
-        lo = 0
         hi = bisect.bisect_right(numbers, target)
         if hi == len(numbers):
             hi -= 1
