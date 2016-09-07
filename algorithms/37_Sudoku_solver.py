@@ -1,4 +1,6 @@
 # https://leetcode.com/problems/sudoku-solver/
+import copy
+import collections
 
 
 class Solution(object):
@@ -6,36 +8,66 @@ class Solution(object):
         num_board = []
         for row in board:
             num_board.append([0 if letter == "." else int(letter) for letter in row])
-        blank_cell_size = -1
-        while True:
+        length = len(board)
+        solved, num_board = self.solve_sudoku(num_board, length)
+        for i in range(length):
+            board[i] = "".join([str(num_board[i][j]) for j in range(length)])
+
+    def solve_sudoku(self, num_board, length):
+        solved, possible_dict = self.solve_by_rule(num_board, length)
+        if solved:
+            return solved, num_board
+        else:
+            return self.permute_all(num_board, possible_dict, length)
+
+    def permute_all(self, num_board, possible_dict, length):
+        # order by length of choices
+        ordered_dict = collections.OrderedDict(sorted(possible_dict.items(), key=lambda x: len(x[1])))
+        for key, value in ordered_dict.items():
+            for v in value:
+                permutation_board = copy.deepcopy(num_board)
+                permutation_board[key[0]][key[1]] = v
+                try:
+                    solved, result_board = self.solve_sudoku(permutation_board, length)
+                    if solved:
+                        return solved, result_board
+                except Exception:
+                    pass
+        return False, None
+
+    def solve_by_rule(self, num_board, length):
+        solved = False
+        stuck = False
+        while not solved and not stuck:
             possible_dict = {}
-            for i in range(9):
-                for j in range(9):
+            updated = False
+            for i in range(length):
+                for j in range(length):
                     if num_board[i][j] == 0:
-                        possibility = self.list_possibility(num_board, i, j)
-                        if len(possibility) == 1:
+                        possibility = self.list_possibility(num_board, i, j, length)
+                        if len(possibility) == 0:
+                            # throw exception
+                            raise Exception("unsolvable")
+                        elif len(possibility) == 1:
                             num_board[i][j] = possibility.pop()
+                            updated = True
                         else:
                             possible_dict[tuple((i, j))] = possibility
             if len(possible_dict) == 0:
-                break
-            elif blank_cell_size == len(possible_dict):
-                count = len(possible_dict)
+                solved = True
+            elif not updated:
                 for key, value in possible_dict.items():
                     row, col = key
                     possibility = self.list_permutation_possibility(possible_dict, row, col)
                     if len(possibility) == 1:
                         num_board[row][col] = possibility.pop()
-                        count -= 1
-                if count == blank_cell_size:
-                    # do something here
+                        updated = True
+                if not updated:
+                    #for key in sorted(list(possible_dict.keys())):
+                    #    print(key, possible_dict[key])
+                    stuck = True
                     break
-                else:
-                    blank_cell_size = count
-            else:
-                blank_cell_size = len(possible_dict)
-        for i in range(9):
-            board[i] = "".join([str(num_board[i][j]) for j in range(9)])
+        return solved, possible_dict
 
     @staticmethod
     def list_permutation_possibility(possible_dict, row, col):
@@ -59,14 +91,14 @@ class Solution(object):
         return permutation
 
     @staticmethod
-    def list_possibility(num_board, i, j):
-        choices = set([choice for choice in range(1, 10, 1)])
-        for col in range(9):
+    def list_possibility(num_board, i, j, length):
+        choices = set([choice for choice in range(1, len(num_board)+1, 1)])
+        for col in range(length):
             try:
                 choices.remove(num_board[i][col])
             except KeyError:
                 pass
-        for row in range(9):
+        for row in range(length):
             try:
                 choices.remove(num_board[row][j])
             except KeyError:
@@ -82,21 +114,18 @@ class Solution(object):
         return choices
 
 
-
 a = Solution()
-# board =       ["53..7....",
-#                "6..195...",
-#                ".98....6.",
-#                "8...6...3",
-#                "4..8.3..1",
-#                "7...2...6",
-#                ".6....28.",
-#                "...419..5",
-#                "....8..79"]
-# a.solveSudoku(board)
-# print(board)
+board = ["6..5..4..", "789.....6", "...678...", "13..4..8.", "...321...", ".7..8..34", "...462...", "3.....621", "..8..3..7"]
+print(board)
+a.solveSudoku(board)
+print(board)
 print("####2####")
 board2 = ["..9748...","7........",".2.1.9...","..7...24.",".64.1.59.",".98...3..","...8.3.2.","........6","...2759.."]
 print(board2)
 a.solveSudoku(board2)
 print(board2)
+print("####3####")
+board3 = ["78.962..1","..1....7.",".5..17.3.",".981.6...","..5.3.8..","...7.931.",".3.62..9.",".6....4..","9..478.53"]
+print(board3)
+a.solveSudoku(board3)
+print(board3)
