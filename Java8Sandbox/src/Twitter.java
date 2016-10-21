@@ -51,6 +51,8 @@ public class Twitter {
     		}
     	}
     	// backtracking
+    	// Comparator c = (a, b) -> ((Tweet)a).getTime() > ((Tweet)b).getTime() ? 1:-1;
+
     	for (int i=1; i<=10 && !tweetTracker.isEmpty(); i++) {
     		int selectedUserIndex = -1;
     		int selectedTweetIndex = -1;

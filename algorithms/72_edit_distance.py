@@ -41,7 +41,8 @@ class Solution(object):
 a = Solution()
 print(a.minDistance("", "bcd"))
 print(a.minDistance("abc", "bcd"))
-for _ in range(100):
+print(a.minDistance("apples", "pears"))
+for _ in range(0):
     length = 3 + random.randint(0, 30)
     string1 = [chr(random.randint(0, 25) + (ord('a') if random.random() <= 0.5 else ord('A'))) for _ in range(length)]
     print('"' + "".join(string1) + '"')
