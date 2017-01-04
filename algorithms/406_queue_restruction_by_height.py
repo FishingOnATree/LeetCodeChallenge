@@ -17,5 +17,3 @@ class Solution(object):
 
 a = Solution()
 print(a.reconstructQueue([[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]))
-
-for _ in range(30):
