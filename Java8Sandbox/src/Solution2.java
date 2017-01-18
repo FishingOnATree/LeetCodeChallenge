@@ -1,7 +1,7 @@
 /*
  * https://leetcode.com/problems/add-two-numbers/
- * 
- * You are given two linked lists representing two non-negative numbers. The digits are stored in reverse order 
+ *
+ * You are given two linked lists representing two non-negative numbers. The digits are stored in reverse order
  * and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
  * Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
  * Output: 7 -> 0 -> 8
@@ -37,15 +37,15 @@ public class Solution2 {
         }
     	return node;
     }
-    
-    
+
+
     private ListNode convertToListNode(int num) {
     	ListNode root = null, ln = null, prevNode = null;
     	int n = num;
     	while (n > 0) {
     		prevNode = ln;
     		ln = new ListNode(n%10);
-    		n = n / 10;    		
+    		n = n / 10;
     		if (prevNode == null) {
     			root = ln;
     		} else {
@@ -55,7 +55,7 @@ public class Solution2 {
     	}
     	return root;
     }
-    
+
     public static void main(String args[]) {
     	Solution2 a = new Solution2();
     	System.out.println(a.convertToListNode(103));
@@ -72,20 +72,4 @@ public class Solution2 {
     	System.out.println(a.addTwoNumbers(a3, a4));
     	System.out.println("==================");
     }
-}
-
-
-class ListNode {
-     int val;
-     ListNode next;
-     ListNode(int x) { val = x; }
-     public String toString(){
-    	 ListNode node = this;
-    	 StringBuilder sb = new StringBuilder();
-    	 while (node != null) {
-    		 sb.append(Integer.toString(node.val));
-    		 node = node.next;
-    	 }
-    	 return sb.toString();
-     }
 }
