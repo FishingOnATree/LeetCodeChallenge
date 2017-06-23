@@ -18,21 +18,46 @@ class Solution(object):
         :rtype: void Do not return anything, modify board in-place instead.
         """
         values = self.grid_value(board)
-        self.reduce_choices(values)
+        values = self.search(values)
+        display(values, self.boxes, self.rows, self.cols)
+
+    def search(self, values):
+        values = self.reduce_choices(values)
+        if not values:
+            return False
+        elif self.count_solved(values) == 81:
+            return values
+        else:
+            # recursively search
+            min_choice = 9
+            min_boxes = []
+            for box, choice in filter(lambda item: len(item[1]) > 1, values.items()):
+                if len(choice) < min_choice:
+                    min_boxes = [box]
+                    min_choice = len(choice)
+                elif len(choice) == min_choice:
+                    min_boxes.append(box)
+            print(min_boxes)
+            display(values, self.boxes, self.rows, self.cols)
+            chosen_box = min_boxes[0]
+            for digit in values[chosen_box]:
+                new_values = dict(values)
+                new_values[chosen_box] = digit
+                result = self.search(new_values)
+                if result:
+                    return result
 
     def reduce_choices(self, values):
         stalled = False
-        display(values, self.boxes, self.rows, self.cols)
         while not stalled:
             solved_before = self.count_solved(values)
             values = self.eliminate(values)
             values = self.only_choice(values)
-            print('Iteration')
-            display(values, self.boxes, self.rows, self.cols)
             solved_after = self.count_solved(values)
             stalled = solved_before == solved_after
             if len([1 for v in values.values() if len(v) == 0]):
                 return False
+        return values
 
     @staticmethod
     def count_solved(value):
@@ -77,4 +102,5 @@ def display(values, boxes, rows, cols):
     return
 
 a = Solution()
-a.solveSudoku('..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..')
+#a.solveSudoku('..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..')
+a.solveSudoku('4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......')
