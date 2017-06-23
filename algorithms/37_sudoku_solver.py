@@ -13,13 +13,10 @@ class Solution(object):
         self.unitlist = row_units + col_units + box_units
 
     def solveSudoku(self, board):
-        """
-        :type board: List[List[str]]
-        :rtype: void Do not return anything, modify board in-place instead.
-        """
         values = self.grid_value(board)
         values = self.search(values)
-        display(values, self.boxes, self.rows, self.cols)
+        for index, row in enumerate(self.rows):
+            board[index] = "".join([values[box] for box in self.cross(row, self.cols)])
 
     def search(self, values):
         values = self.reduce_choices(values)
@@ -37,8 +34,6 @@ class Solution(object):
                     min_choice = len(choice)
                 elif len(choice) == min_choice:
                     min_boxes.append(box)
-            print(min_boxes)
-            display(values, self.boxes, self.rows, self.cols)
             chosen_box = min_boxes[0]
             for digit in values[chosen_box]:
                 new_values = dict(values)
@@ -68,7 +63,8 @@ class Solution(object):
         return [a + b for a in r for b in c]
 
     def grid_value(self, board):
-        return {box: value if value != '.' else self.cols for box, value in zip(self.boxes, board)}
+        board_str = "".join((map(str, board)))
+        return {box: value if value != '.' else "123456789" for box, value in zip(self.boxes, board_str)}
 
     def eliminate(self, values):
         # 123
@@ -87,20 +83,23 @@ class Solution(object):
                     values[d_possible[0]] = d
         return values
 
-def display(values, boxes, rows, cols):
-    """
-    Display the values as a 2-D grid.
-    Input: The sudoku in dictionary form
-    Output: None
-    """
-    width = 1+max(len(values[s]) for s in boxes)
-    line = '+'.join(['-'*(width*3)]*3)
-    for r in rows:
-        print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
-                      for c in cols))
-        if r in 'CF': print(line)
-    return
+    def display(self, values):
+        """
+        Display the values as a 2-D grid.
+        Input: The sudoku in dictionary form
+        Output: None
+        """
+        width = 1+max(len(values[s]) for s in self.boxes)
+        line = '+'.join(['-'*(width*3)]*3)
+        for r in self.rows:
+            print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
+                          for c in self.cols))
+            if r in 'CF': print(line)
+        return
 
 a = Solution()
 #a.solveSudoku('..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..')
-a.solveSudoku('4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......')
+board = ["..9748...","7........",".2.1.9...","..7...24.",".64.1.59.",".98...3..","...8.3.2.","........6","...2759.."]
+print("Before: ", board)
+a.solveSudoku(board)
+print("After: ", board)
