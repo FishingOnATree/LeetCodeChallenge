@@ -4,6 +4,26 @@
 class Solution:
 
     def numDecodings(self, s: str) -> int:
+        dp = [0] * (len(s) + 1)
+        dp[0] = 1
+        if self.is_valid(s[0]):
+            dp[1] = 1
+        else:
+            return 0
+        for index in range(1, len(s)):
+            if self.is_valid(s[index]):
+                dp[index+1] += dp[index]
+            if self.is_valid(s[index-1:index+1]):
+                dp[index+1] += dp[index-1]
+        return dp[len(s)]
+
+    def is_valid(self, s: str) -> bool:
+        return False if s[0] == '0' or int(s) > 26 else True
+
+
+class SolutionB:
+
+    def numDecodings(self, s: str) -> int:
         sub_strings = self.section_by_zero(s)
         no_way = 1
         for part in sub_strings:
@@ -51,5 +71,5 @@ class Solution:
 a = Solution()
 ss = ["27", "198", "11810", "1181019", "12", "226", "06", "111111111111111111111111111111111111111111111"]
 for s in ss:
-    print(s, " --> ", a.section_by_zero(s))
+    # print(s, " --> ", a.section_by_zero(s))
     print(s, " --> ", a.numDecodings(s))
